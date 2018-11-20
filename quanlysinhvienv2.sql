@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 20, 2018 lúc 03:17 PM
+-- Thời gian đã tạo: Th10 20, 2018 lúc 05:54 PM
 -- Phiên bản máy phục vụ: 10.1.35-MariaDB
 -- Phiên bản PHP: 7.2.9
 
@@ -26,12 +26,64 @@ DELIMITER $$
 --
 -- Thủ tục
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddHP` (`maHPx` VARCHAR(5), `mssvx` VARCHAR(8), `HocKix` INT, `NamHocx` INT)  BEGIN
+	INSERT INTO ketqua (maHP, mssv, HocKi, NamHoc,diem) VALUES (maHPx,mssvx,HocKix,NamHocx,-1);
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddSinhVien` (`mssv` CHAR(8), `hoTen` VARCHAR(45), `gioiTinh` CHAR(3), `ngaySinh` DATE, `diaChi` VARCHAR(100), `maKhoa` CHAR(2), `maNganh` CHAR(2), `KhoaHoc` INT)  BEGIN
 	INSERT INTO sinhvien(mssv, hoTen, gioiTinh, ngaySinh, diaChi, maKhoa, maNganh, KhoaHoc) VALUES(mssv,hoTen,gioiTinh,ngaySinh,diaChi,maKhoa,maNganh,KhoaHoc);
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteHP` (`mssvx` VARCHAR(8), `maHPx` VARCHAR(5))  BEGIN
+	DELETE FROM ketqua WHERE mssv=mssvx AND maHP=maHPx;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteSinhVien` (`mssvx` VARCHAR(8))  BEGIN
+	DELETE FROM sinhvien WHERE mssv=mssvx;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUser` (`mssvx` VARCHAR(8))  BEGIN
+	DELETE FROM taikhoan WHERE mssv=mssvx;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetHP` (`mssvx` VARCHAR(8), `makhoax` CHAR(2))  BEGIN
+	select maHP, tenHP, soTinChi from hocphan a where (a.maHP not in (select a.maHP from hocphan a, ketqua b where a.mahp = b.mahp and b.mssv = mssvx) and makhoa=makhoax);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetHPNoRE` (`mssvx` VARCHAR(8), `makhoax` VARCHAR(2))  BEGIN
+	select maHP, tenHP, soTinChi from hocphan a where (a.maHP not in (select a.maHP from hocphan a, ketqua b where a.mahp = b.mahp and b.mssv = mssvx) and makhoa=makhoax);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetKetQua` (`mssvx` VARCHAR(8))  BEGIN
+	SELECT mssv,a.maHP, soTinChi, tenHP, HocKi, NamHoc,diem FROM hocphan a,ketqua b WHERE a.maHP=b.maHP && mssv=mssvx;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetNganh` ()  BEGIN
+	SELECT khoa.maKhoa, khoa.tenkhoa, nganh.maNganh, tenNganh FROM khoa, nganh WHERE khoa.maKhoa = nganh.maKhoa ORDER BY khoa.maKhoa;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetSoSV` ()  BEGIN
+	SELECT COUNT(mssv) as TongSV, tenKhoa FROM sinhvien a , khoa b WHERE a.maKhoa = b.maKhoa GROUP BY a.maKhoa;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginDB` (`mssvx` VARCHAR(8), `matKhaux` VARCHAR(18))  BEGIN
+	SELECT taikhoan.rank FROM taikhoan WHERE mssv = mssvx AND matKhau = matKhaux;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchSinhVien` (`hoTenx` VARCHAR(32))  BEGIN
+	SELECT * FROM SINHVIEN WHERE hoTen LIKE hotenX;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SelectNganh` (`maKhoax` CHAR(2), `maNganhx` CHAR(2))  BEGIN
+	SELECT * FROM SINHVIEN WHERE makhoa=maKhoax && manganh=maNganhx;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowSinhVien` ()  BEGIN
 	SELECT * FROM sinhvien;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateDiem` (`diemx` INT, `mssvx` VARCHAR(8), `maHPx` VARCHAR(5))  BEGIN
+	UPDATE ketqua SET diem = diemx WHERE mssv = mssvx AND maHP = maHPx;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateSinhVien` (`mssvx` CHAR(8), `hoTenx` VARCHAR(45), `gioiTinhx` CHAR(3), `ngaySinhx` DATE, `diaChix` VARCHAR(100), `maKhoax` CHAR(2), `maNganhx` CHAR(2), `KhoaHocx` INT)  BEGIN
@@ -91,11 +143,12 @@ CREATE TABLE `ketqua` (
 INSERT INTO `ketqua` (`maHP`, `mssv`, `HocKi`, `NamHoc`, `diem`) VALUES
 ('CT172', 'B1606909', 1, 2017, -1),
 ('CT172', 'B1606930', 1, 2017, -1),
-('CT172', 'B1606931', 1, 2017, 5),
+('CT172', 'B1606931', 1, 2017, 6),
 ('CT176', 'B1606931', 3, 2017, -1),
 ('TN001', 'B1606909', 1, 2017, -1),
 ('TN001', 'B1606930', 1, 2017, 4),
-('TN001', 'B1606931', 1, 2017, 4);
+('TN001', 'B1606931', 1, 2017, 6),
+('TN012', 'B1606931', 1, 2018, -1);
 
 -- --------------------------------------------------------
 

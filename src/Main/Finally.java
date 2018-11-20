@@ -759,7 +759,7 @@ public class Finally extends javax.swing.JFrame {
 
         SinhVienFrame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        QuanLyDiemTable1.setBackground(new java.awt.Color(255, 102, 102));
+        QuanLyDiemTable1.setBackground(new java.awt.Color(102, 102, 102));
         QuanLyDiemTable1.setMaximumSize(new java.awt.Dimension(995, 400));
         QuanLyDiemTable1.setMinimumSize(new java.awt.Dimension(995, 400));
 
@@ -1015,7 +1015,7 @@ public class Finally extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        QLSVPane.setBackground(new java.awt.Color(255, 102, 102));
+        QLSVPane.setBackground(new java.awt.Color(102, 102, 102));
         QLSVPane.setPreferredSize(new java.awt.Dimension(995, 450));
 
         CapNhatSV.setText("Cập Nhập SV");
@@ -1205,7 +1205,7 @@ public class Finally extends javax.swing.JFrame {
 
         TabPane.addTab("Thông Tin Sinh Viên", QLSVPane);
 
-        QuanLyDiemTable.setBackground(new java.awt.Color(255, 102, 102));
+        QuanLyDiemTable.setBackground(new java.awt.Color(102, 102, 102));
         QuanLyDiemTable.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 QuanLyDiemTableFocusGained(evt);
@@ -1442,7 +1442,7 @@ public class Finally extends javax.swing.JFrame {
 
         TabPane.addTab("Quản Lý Điểm", QuanLyDiemTable);
 
-        ThongKePanel.setBackground(new java.awt.Color(255, 102, 102));
+        ThongKePanel.setBackground(new java.awt.Color(102, 102, 102));
 
         jButton4.setText("Test");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -1825,7 +1825,8 @@ public class Finally extends javax.swing.JFrame {
         DanhSachHP.setSize(560, 383);
         DanhSachHP.setResizable(false);
         String makhoa =  makhoaTab3.getText();
-        listHP = new Connect().getHP(makhoa);
+        String mssv = mssvSVF.getText();
+        listHP = new Connect().getHP(mssv,makhoa);
         modelHP = (DefaultTableModel) DSHP.getModel();
         modelHP.setColumnIdentifiers(new Object[]{
             "Mã Học Phần", "Tên Học Phần","Số TC"

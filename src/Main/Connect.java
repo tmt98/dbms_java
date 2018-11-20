@@ -81,7 +81,7 @@ public class Connect {
     }
     // DELETE
     public boolean delete(String mssv){
-        String sql = "DELETE FROM sinhvien WHERE mssv=?";
+        String sql = "call DeleteSinhVien(?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, mssv);
@@ -94,7 +94,7 @@ public class Connect {
           return false;
     }
     public boolean deleteUser(String mssv){
-        String sql = "DELETE FROM taikhoan WHERE mssv=?";
+        String sql = "call DeleteUser(?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, mssv);
@@ -107,7 +107,7 @@ public class Connect {
           return false;
     }
     public boolean deleteHP(String mssv, String maHP){
-        String sql = "DELETE FROM ketqua WHERE mssv=? AND maHP=?";
+        String sql = "call DeleteHP(?,?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, mssv);
@@ -123,7 +123,7 @@ public class Connect {
     // SORT
     public ArrayList<SinhVien> sapXepSV(String t){
         ArrayList<SinhVien> list = new ArrayList<>();
-        String sql = "SELECT * FROM SINHVIEN ORDER BY " + t;
+        String sql = "SELECT * FROM SINHVIEN ORDER BY "+ t;
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -149,7 +149,7 @@ public class Connect {
     public ArrayList<SinhVien> tiemKiemSinhVien(String hoTen){
         ArrayList<SinhVien> list = new ArrayList<>();
         System.out.print(hoTen);
-        String sql = "SELECT * FROM SINHVIEN WHERE hoTen LIKE ?";
+        String sql = "call SearchSinhVien(?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1,"%"+ hoTen+"%");
@@ -196,7 +196,7 @@ public class Connect {
     }
     public ArrayList<Nganh> getNganh(){
         ArrayList<Nganh> listN = new ArrayList<>();
-        String sql = "SELECT khoa.maKhoa, khoa.tenkhoa, nganh.maNganh, tenNganh FROM khoa, nganh WHERE khoa.maKhoa = nganh.maKhoa ORDER BY khoa.maKhoa";
+        String sql = "call GetNganh()";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -216,7 +216,7 @@ public class Connect {
     }
     public ArrayList<SinhVien> selectTableNganh(String mk, String mn){
         ArrayList<SinhVien> list = new ArrayList<>();
-        String sql = "SELECT * FROM SINHVIEN WHERE makhoa=? && manganh=?";
+        String sql = "call SelectNganh(?,?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, mk);
@@ -242,7 +242,7 @@ public class Connect {
     }
     public ArrayList<KetQua> getKetQua(String X){
         ArrayList<KetQua> listKQ = new ArrayList<>();
-        String sql = "SELECT mssv,a.maHP, soTinChi, tenHP, HocKi, NamHoc,diem FROM hocphan a,ketqua b WHERE a.maHP=b.maHP && mssv=?;";
+        String sql = "call GetKetQua(?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1,X);
@@ -264,13 +264,12 @@ public class Connect {
         }
         return listKQ;
     }
-    public ArrayList<HocPhan> getHP(String X){
+    public ArrayList<HocPhan> getHP(String mssv,String X){
         ArrayList<HocPhan> listHP = new ArrayList<>();
-        String sql = "select maHP, tenHP, soTinChi from hocphan a where"
-                + " (a.maHP not in (select a.maHP from hocphan a, ketqua b where a.mahp = b.mahp and b.mssv = ?) and makhoa=?);";
+        String sql = "call GetHP(?,?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1,"B1606931");
+            ps.setString(1,mssv);
             ps.setString(2,X);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
@@ -285,8 +284,7 @@ public class Connect {
         catch (Exception e){
             e.printStackTrace();
         }
-        String sql1 = "select maHP, tenHP, soTinChi from hocphan a where"
-                + " (a.maHP not in (select a.maHP from hocphan a, ketqua b where a.mahp = b.mahp and b.mssv = ?) and makhoa=?);";
+        String sql1 = "call GetHPNoRE(?,?);";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1,"B1606931");
@@ -307,7 +305,7 @@ public class Connect {
         return listHP;
     }
     public boolean updateDiem(KetQua kq){
-        String sql = "UPDATE ketqua SET diem = ? WHERE mssv = ? AND maHP = ?";
+        String sql = "call UpdateDiem(?,?,?);";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, kq.getDiem());
@@ -322,7 +320,7 @@ public class Connect {
     } 
     public ArrayList<Khoa> getSoSV(){
         ArrayList<Khoa> list = new ArrayList<>();
-        String sql = "SELECT COUNT(mssv) as TongSV, tenKhoa FROM sinhvien a , khoa b WHERE a.maKhoa = b.maKhoa GROUP BY a.maKhoa;";
+        String sql = "call GetSoSV();";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -340,8 +338,8 @@ public class Connect {
         return list;
     }
     public String login(String user, String password){
-        String SV = new String("");
-        String sql = "SELECT rank FROM taikhoan WHERE mssv = ? && matKhau = ?";
+        String rank = new String();
+        String sql = "call LoginDB(?,?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, user);
@@ -349,16 +347,16 @@ public class Connect {
             ResultSet rs = ps.executeQuery();
             
             while(rs.next()){       
-            SV = rs.getString("rank");
+            rank = rs.getString("rank");
             }
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        return SV;
+        return rank;
     }
     public boolean themHP(String mahp, String mssv, int hk, int namhoc){
-        String sql = "INSERT INTO ketqua (maHP, mssv, HocKi, NamHoc,diem) VALUES (?,?,?,?,-1);";
+        String sql = "call AddHP(?,?,?,?);";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, mahp);
